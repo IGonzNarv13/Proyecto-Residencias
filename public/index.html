@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Repositorio Escolar</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; }
+    input[type="file"] { display: none; }
+    #lista { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Repositorio de Documentos</h1>
+  
+  <!-- Formulario -->
+  <form id="form" action="/upload" method="post" enctype="multipart/form-data">
+    <button type="button" onclick="document.getElementById('archivo').click()">Seleccionar archivo PDF</button>
+    <input type="file" id="archivo" name="archivo" accept=".pdf" required>
+    <br><br>
+    <button type="submit">Subir</button>
+  </form>
+
+  <br>
+  <!-- Botón para ver lista de archivos -->
+  <button id="verArchivos">Ver archivos subidos</button>
+
+  <!-- Contenedor de lista -->
+  <div id="lista"></div>
+
+  <script>
+    // Mostrar nombre al seleccionar archivo
+    const input = document.getElementById("archivo");
+    input.addEventListener("change", () => {
+      if (input.files.length > 0) {
+        alert("Archivo seleccionado: " + input.files[0].name);
+      }
+    });
+
+    // Botón para cargar lista de archivos
+    document.getElementById("verArchivos").addEventListener("click", async () => {
+      const res = await fetch("/archivos");
+      const archivos = await res.json();
+
+      if (archivos.length === 0) {
+        document.getElementById("lista").innerHTML = "<p>No hay archivos subidos todavía.</p>";
+        return;
+      }
+
+      let html = "<h2>Archivos subidos:</h2><ul>";
+      archivos.forEach(a => {
+        html += `<li><a href="${a.url}" target="_blank">${a.nombre}</a></li>`;
+      });
+      html += "</ul>";
+
+      document.getElementById("lista").innerHTML = html;
+    });
+  </script>
+</body>
+</html>
